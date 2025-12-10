@@ -1,0 +1,99 @@
+/* styles.css */
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #111111;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 800px;
+  margin: 32px auto;
+  padding: 16px;
+  background-color: #444;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 8px;
+  color: #f3f4f6;
+}
+
+.subtitle {
+  text-align: center;
+  color: #feffff;
+  margin-bottom: 24px;
+}
+
+.card {
+  background: #666;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+}
+
+.label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #feffff;
+}
+
+input[type="file"] {
+  margin-bottom: 12px;
+}
+
+button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+#runCheckBtn {
+  background: #ffffff;
+  color: rgba(5, 9, 229, 0.294);
+}
+
+#downloadCsvBtn {
+  background: #f6f4f4;
+  color: rgba(5, 9, 229, 0.294);
+}
+
+#downloadPdfBtn {
+  background: #6b21a8;
+  color: white;
+}
+
+.hint {
+  font-size: 0.85rem;
+  color: #ebeef5;
+  margin-top: 8px;
+}
+
+/* We'll improve table styles later */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 8px;
+}
+
+th, td {
+  border: 1px solid #e5e7eb;
+  padding: 6px 8px;
+  font-size: 0.9rem;
+}
+
+th {
+  background: #f9fafb;
+  text-align: left;
+}

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HR Timecard Checker</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>HR Timecard Checker</h1>
+    <p class="subtitle">
+      1) Download the employee timecard as CSV from Google Sheets<br />
+      2) Upload it here<br />
+      3) Click <strong>Run Check</strong> to see the report
+    </p>
+
+    <!-- File upload -->
+    <div class="card">
+      <label for="fileInput" class="label">Upload CSV file</label>
+      <input type="file" id="fileInput" accept=".csv" />
+      <button id="runCheckBtn" disabled>Run Check</button>
+    </div>
+
+    <!-- Summary -->
+    <div class="card" id="summaryCard" hidden>
+      <h2>Summary</h2>
+      <div id="summaryContent"></div>
+    </div>
+
+    <!-- Timecard table -->
+    <div class="card" id="tableCard" hidden>
+      <h2>Recreated Timecard</h2>
+      <div id="tableContainer"></div>
+    </div>
+
+    <!-- Downloads -->
+    <div class="card" id="downloadCard" hidden>
+      <h2>Export</h2>
+      <button id="downloadCsvBtn" disabled>Download Clean CSV</button>
+      <button id="downloadPdfBtn" disabled>Download PDF</button>
+      <p class="hint">
+        After downloading, save files into your <code>output/</code> folder.
+      </p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
