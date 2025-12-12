@@ -73,6 +73,13 @@ runCheckBtn.addEventListener("click", () => {
   reader.readAsText(file);
 });
 
+// PDF button: only enabled when no errors (controlled later)
+downloadPdfBtn.addEventListener("click", () => {
+  // Ensure print view is populated before print
+  populatePrintView();
+  window.print(); // user chooses "Save as PDF"
+});
+
 // ---------------------------------------------------------------------------
 // CSV parsing & metadata
 // ---------------------------------------------------------------------------
@@ -145,7 +152,7 @@ function processCsv(csvText) {
   headerRow = splitCsvLine(nonEmptyLines[dataHeaderIndex]);
   console.log("Header columns:", headerRow);
 
-  // 3) Parse rows beneath header
+  // 3) Parse rows beneath header, but STOP after the TOTAL HOURS footer row
   const rows = [];
   for (let i = dataHeaderIndex + 1; i < nonEmptyLines.length; i++) {
     const line = nonEmptyLines[i];
@@ -158,10 +165,15 @@ function processCsv(csvText) {
       rowObj[key] = values[idx] !== undefined ? values[idx].trim() : "";
     });
     rows.push(rowObj);
+
+    // IMPORTANT: stop parsing after the bottom TOTAL HOURS footer row
+    if (isTotalsFooterRow(rowObj)) {
+      break;
+    }
   }
   parsedRows = rows;
 
-  // 4) Detect payroll totals footer row
+  // 4) Detect payroll totals footer row (used for summary only)
   detectPayrollTotalsFromFooter(nonEmptyLines, dataHeaderIndex);
 }
 
@@ -287,6 +299,26 @@ function formatHours(value) {
 }
 
 // ---------------------------------------------------------------------------
+// Footer detection helper (bottom "TOTAL HOURS" row ONLY)
+// ---------------------------------------------------------------------------
+
+function isTotalsFooterRow(row) {
+  const dayCell = (row["DAY"] || "").trim().toUpperCase();
+  const timeOutCell = (row["TIME OUT"] || "").trim().toUpperCase();
+
+  const dayNames = [
+    "MONDAY", "TUESDAY", "WEDNESDAY",
+    "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"
+  ];
+
+  const isRealDay = dayNames.includes(dayCell);
+  const isTotalsLabelInTimeOut = timeOutCell === "TOTAL HOURS";
+
+  // In your CSV, the bottom footer row has TIME OUT = "TOTAL HOURS" and no day name
+  return !isRealDay && isTotalsLabelInTimeOut;
+}
+
+// ---------------------------------------------------------------------------
 // Policy-based evaluation (truth from punches)
 // ---------------------------------------------------------------------------
 
@@ -312,7 +344,31 @@ function evaluateAllRows() {
 
   // First pass: per-day truth + validation
   parsedRows.forEach((row, idx) => {
-    const dayName = (row["DAY"] || "").trim().toUpperCase();
+    // Detect the footer "TOTAL HOURS" row and skip normal validation
+    if (isTotalsFooterRow(row)) {
+      const sickHours = parseNumberOrNull(row["SICK LEAVE"]) || 0;
+      const regHours = parseNumberOrNull(row["REGULAR HOURS"]) || 0;
+      const otHours  = parseNumberOrNull(row["OVER TIME"]) || 0;
+      const totalCell = parseNumberOrNull(row["TOTAL HOURS"]);
+
+      row._eval = {
+        isFooter: true,
+        timeHours: 0,
+        sickHours,
+        regHours,
+        otHours,
+        totalCell,
+        computedHours: null,   // don't recompute "truth" for footer
+        hasError: false,       // footer never blocks PDF
+        errorMessages: [],
+        weekIndex: null
+      };
+
+      return; // skip normal validation for this row
+    }
+
+    const rawDayCell = (row["DAY"] || "").trim();
+    const dayName = rawDayCell.toUpperCase();
     const isDay = dayNames.includes(dayName);
 
     const timeHours = computeTimeHours(row);                 // truth: worked hours
@@ -405,7 +461,7 @@ function evaluateAllRows() {
     };
   });
 
-  // Second pass: weekly OT checks (weekly policy employees)
+  // Second pass: weekly OT checks (weekly OT policy employees)
   if (employeePolicy === "WEEKLY_OT" && dayRowIndices.length > 0) {
     applyWeeklyOTChecks(dayRowIndices);
   }
@@ -535,8 +591,9 @@ function applyWeeklyOTChecks(dayRowIndices) {
     }
   }
 }
+
 // ---------------------------------------------------------------------------
-// Weekly summary builder (for HR quick scan)
+// Weekly summary builder
 // ---------------------------------------------------------------------------
 
 function buildWeeklySummary() {
@@ -544,7 +601,7 @@ function buildWeeklySummary() {
 
   parsedRows.forEach((row) => {
     const ev = row._eval;
-    if (!ev || ev.weekIndex == null) return; // skip non-day rows
+    if (!ev || ev.isFooter || ev.weekIndex == null) return; // skip non-day + footer
 
     const w = ev.weekIndex;
     if (!weeks.has(w)) {
@@ -568,7 +625,6 @@ function buildWeeklySummary() {
     }
   });
 
-  // Turn Map into sorted array (week 1, week 2, etc.)
   const summaryArray = Array.from(weeks.values());
   summaryArray.sort((a, b) => a.weekIndex - b.weekIndex);
   return summaryArray;
@@ -623,6 +679,124 @@ function buildWeeklySummaryHtml() {
 }
 
 // ---------------------------------------------------------------------------
+// Print / PDF helpers
+// ---------------------------------------------------------------------------
+
+function updatePdfButtonState() {
+  const hasAnyError = parsedRows.some((r) => r._eval && r._eval.hasError);
+  downloadPdfBtn.disabled = hasAnyError;
+  downloadPdfBtn.title = hasAnyError
+    ? "PDF disabled — fix errors first."
+    : "Generate printable PDF.";
+}
+
+// Fills #printArea elements before calling window.print()
+// We support two modes:
+// - New structure: pOriginalTable + pReportSummary + pReportTable
+// - Fallback: older pWeeklySummary + pTable (if you already added those)
+function populatePrintView() {
+  const pEmployee = document.getElementById("pEmployee");
+  const pBegin = document.getElementById("pBegin");
+  const pEnd = document.getElementById("pEnd");
+  const pPayDate = document.getElementById("pPayDate");
+
+  if (pEmployee) pEmployee.textContent = employeeName || "";
+  if (pBegin) pBegin.textContent = payBeginDate || "";
+  if (pEnd) pEnd.textContent = payEndDate || "";
+  if (pPayDate) pPayDate.textContent = payDate || "";
+
+  const pOriginalTable = document.getElementById("pOriginalTable");
+  const pReportSummary = document.getElementById("pReportSummary");
+  const pReportTable = document.getElementById("pReportTable");
+
+  const pWeeklySummary = document.getElementById("pWeeklySummary");
+  const pTable = document.getElementById("pTable");
+
+  // --- NEW: "Original" timecard layout (no computed / no rule error) ------
+  if (pOriginalTable) {
+    let origHtml = "<table><thead><tr>";
+    headerRow.forEach(h => {
+      origHtml += `<th>${h}</th>`;
+    });
+    origHtml += "</tr></thead><tbody>";
+
+    parsedRows.forEach(row => {
+      origHtml += "<tr>";
+      headerRow.forEach(h => {
+        const key = h.trim().toUpperCase();
+        origHtml += `<td>${row[key] || ""}</td>`;
+      });
+      origHtml += "</tr>";
+    });
+
+    origHtml += "</tbody></table>";
+    pOriginalTable.innerHTML = origHtml;
+  }
+
+  // --- Report summary (weekly summary) ------------------------------------
+  const weekly = buildWeeklySummary();
+  const summaryHtml = (() => {
+    if (!weekly.length) return "";
+    let wsHtml = "<table><thead><tr><th>Week</th><th>Worked</th><th>Sick</th><th>Regular</th><th>OT</th></tr></thead><tbody>";
+    weekly.forEach(w => {
+      wsHtml += `
+        <tr>
+          <td>${w.weekIndex}</td>
+          <td>${formatHours(w.workedHours)}</td>
+          <td>${formatHours(w.sickHours)}</td>
+          <td>${formatHours(w.regHours)}</td>
+          <td>${formatHours(w.otHours)}</td>
+        </tr>`;
+    });
+    wsHtml += "</tbody></table>";
+    return wsHtml;
+  })();
+
+  if (pReportSummary) {
+    pReportSummary.innerHTML = summaryHtml;
+  } else if (pWeeklySummary) {
+    // fallback to older id if used
+    pWeeklySummary.innerHTML = summaryHtml;
+  }
+
+  // --- Detailed report table (with computed + rule error) -----------------
+  const reportTableHtml = (() => {
+    let tHtml = "<table><thead><tr>";
+    headerRow.forEach(h => tHtml += `<th>${h}</th>`);
+    tHtml += `<th>Computed Hours</th>`;
+    tHtml += `<th>Rule Error</th>`;
+    tHtml += `</tr></thead><tbody>`;
+
+    parsedRows.forEach(row => {
+      const ev = row._eval || {};
+      tHtml += "<tr>";
+      headerRow.forEach(h => {
+        const key = h.trim().toUpperCase();
+        tHtml += `<td>${row[key] || ""}</td>`;
+      });
+      const displayWorked =
+        ev.computedHours === null || ev.computedHours === undefined
+          ? "—"
+          : ev.computedHours.toFixed(2);
+      const errorText = ev.hasError ? ev.errorMessages.join(" | ") : "";
+      tHtml += `<td>${displayWorked}</td>`;
+      tHtml += `<td>${errorText}</td>`;
+      tHtml += "</tr>";
+    });
+
+    tHtml += "</tbody></table>";
+    return tHtml;
+  })();
+
+  if (pReportTable) {
+    pReportTable.innerHTML = reportTableHtml;
+  } else if (pTable) {
+    // fallback to older id if used
+    pTable.innerHTML = reportTableHtml;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Preview rendering (full table)
 // ---------------------------------------------------------------------------
 
@@ -631,7 +805,7 @@ function showPreviewResults() {
 
   summaryCard.hidden = false;
   tableCard.hidden = false;
-  downloadCard.hidden = true; // we'll use this later for exports
+  downloadCard.hidden = true; // only show PDF if no errors (we'll toggle below)
 
   const numRows = parsedRows.length;
 
@@ -655,11 +829,14 @@ function showPreviewResults() {
     </p>
   `;
 
+  const weeklySummaryHtml = buildWeeklySummaryHtml();
+
   summaryContent.innerHTML = `
     ${metaHtml}
     ${payrollTotalsHtml}
+    ${weeklySummaryHtml}
     <p><strong>CSV parsed and evaluated against punches.</strong></p>
-    <p>Data rows (including footer/extra rows): <strong>${numRows}</strong></p>
+    <p>Data rows (up to TOTAL HOURS footer): <strong>${numRows}</strong></p>
     <p>The table below shows the entire timecard.<br/>
        <strong>Computed Hours</strong> = punches (worked) + sick.<br/>
        <strong>Rule Error</strong> explains exactly what doesn't match our calculations or policy.</p>
@@ -675,13 +852,14 @@ function showPreviewResults() {
     tableHtml += "</tr></thead><tbody>";
 
     parsedRows.forEach((row) => {
+      const ev = row._eval || {};
+
       tableHtml += "<tr>";
       headerRow.forEach((col) => {
         const key = col.trim().toUpperCase();
         tableHtml += `<td>${row[key] || ""}</td>`;
       });
 
-      const ev = row._eval || {};
       const displayWorked =
         ev.computedHours === null || ev.computedHours === undefined
           ? "—"
@@ -700,5 +878,14 @@ function showPreviewResults() {
     tableContainer.innerHTML = tableHtml;
   } else {
     tableContainer.innerHTML = "<p>No data rows found under the header.</p>";
+  }
+
+  // Update print view + PDF button state
+  populatePrintView();
+  updatePdfButtonState();
+
+  // Only show the download card if PDF is allowed (no errors)
+  if (!parsedRows.some((r) => r._eval && r._eval.hasError)) {
+    downloadCard.hidden = false;
   }
 }

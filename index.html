@@ -27,15 +27,8 @@
       <div id="summaryContent"></div>
     </div>
 
-    <!-- Downloads -->
-    <div class="card" id="downloadCard" hidden>
-      <h2>Export</h2>
-      <button id="downloadCsvBtn" disabled>Download Clean CSV</button>
-      <button id="downloadPdfBtn" disabled>Download PDF</button>
-      <p class="hint">
-        After downloading, save files into your <code>output/</code> folder.
-      </p>
-    </div>
+    
+   
   </div>
   <div class="recreatedTimeCardContainer">
   <!-- Timecard table -->
@@ -44,6 +37,35 @@
       <div id="tableContainer"></div>
     </div>
   </div>
+<div id="printArea">
+  <h2>Timecard</h2>
+  <p>
+    <strong>Employee:</strong> <span id="pEmployee"></span><br />
+    <strong>Pay Period:</strong>
+    <span id="pBegin"></span> — <span id="pEnd"></span><br />
+    <strong>Pay Date:</strong> <span id="pPayDate"></span>
+  </p>
+
+  <!-- Original-style timecard -->
+  <h3>Original Timecard</h3>
+  <div id="pOriginalTable"></div>
+
+  <!-- Our report below -->
+  <h3>Validation Summary</h3>
+  <div id="pReportSummary"></div>
+
+  <h3>Validation Details</h3>
+  <div id="pReportTable"></div>
+</div>
+<!-- Downloads -->
+ <div class="card" id="downloadCard" hidden>
+      <h2>Export</h2>
+      <button id="downloadCsvBtn" disabled>Download Clean CSV</button>
+      <button id="downloadPdfBtn" disabled>Download PDF</button>
+      <p class="hint">
+        After downloading, save files into your <code>output/</code> folder.
+      </p>
+    </div>
 
   <script src="app.js"></script>
 </body>

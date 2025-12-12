@@ -140,3 +140,66 @@ button:disabled {
   opacity: 0.5;
   cursor: default;
 }
+
+.weekly-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.weekly-summary-table th,
+.weekly-summary-table td {
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+  text-align: center;
+}
+
+.weekly-summary-table th {
+  background-color: #1a1717;
+}
+
+/* Hide print area normally */
+#printArea {
+  display: none;
+}
+
+/* Print layout */
+@media print {
+
+  /* Hide interactive UI */
+  body * {
+    visibility: hidden !important;
+  }
+
+  /* Show ONLY printArea */
+  #printArea, #printArea * {
+    visibility: visible !important;
+  }
+
+  #printArea {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 20px;
+    font-size: 12pt;
+    width: 100%;
+  }
+
+  #printArea table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  #printArea th, #printArea td {
+    border: 1px solid #000;
+    padding: 4px 6px;
+    text-align: center;
+  }
+
+  #printArea h2, #printArea h3 {
+    margin-top: 20px;
+  }
+}
