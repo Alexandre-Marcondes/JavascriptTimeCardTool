@@ -1,59 +1,68 @@
 /* -----------------------------------------------------------
-   Dark Mode Theme (ChatGPT + VSCode Inspired)
+   Light Mode Theme (Modern SaaS-style)
 ----------------------------------------------------------- */
 
 /* Background of the entire page */
 body {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  background-color: #111214;  /* very dark charcoal */
-  color: #e5e7eb;             /* light gray for general text */
+  background: linear-gradient(180deg, #f5f5f7 0%, #e5edf7 40%, #eef2f7 100%);
+  color: #111827;
   margin: 0;
   padding: 0;
+}
+
+/* App shell */
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.app-header {
+  padding: 24px 16px 8px;
+  display: flex;
+  justify-content: center;
+}
+
+.app-title-block {
+  max-width: 900px;
+  text-align: center;
+}
+
+/* Title */
+h1 {
+  margin: 0 0 10px;
+  color: #1d4ed8;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-size: 2rem;
+}
+
+.subtitle {
+  color: #4b5563;
+  margin-bottom: 12px;
+  line-height: 1.5;
+  font-size: 0.98rem;
+}
+
+/* Main app content */
+.app-main {
+  flex: 1;
+  padding: 8px 16px 32px;
 }
 
 /* Main wrapper */
 .container {
   max-width: 900px;
-  margin: 32px auto;
-  padding: 20px;
-  background-color: #1a1b1e;  /* slightly lighter charcoal */
-  border-radius: 12px;
-  box-shadow: 0 0 25px rgba(0,0,0,0.35);
+  margin: 16px auto;
+  padding: 0;
 }
+
 .recreatedTimeCardContainer {
-  max-width: 90%;
-  margin: 32px auto;
-  padding: 20px;
-  background-color: #1a1b1e;  /* slightly lighter charcoal */
-  border-radius: 12px;
-  box-shadow: 0 0 25px rgba(0,0,0,0.35);
-}
-
-/* -----------------------------------------------------------
-   Typography
------------------------------------------------------------ */
-
-/* VSCode blue (HTML tags) */
-h1 {
-  text-align: center;
-  margin-bottom: 10px;
-  color: #569cd6;   /* VSCode tag blue */
-  font-weight: 700;
-}
-
-.subtitle {
-  text-align: center;
-  color: #a8a8a8;  /* muted white/gray */
-  margin-bottom: 28px;
-  line-height: 1.5;
-}
-
-/* Labels (use same VSCode blue) */
-.label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: 600;
-  color: #569cd6;  /* VSCode blue again */
+  max-width: 1100px;
+  margin: 16px auto 24px;
+  padding: 0;
 }
 
 /* -----------------------------------------------------------
@@ -61,145 +70,254 @@ h1 {
 ----------------------------------------------------------- */
 
 .card {
-  background-color: #232528; /* lighter than container, still dark */
-  border-radius: 12px;
+  background: #ffffff;
+  border-radius: 16px;
   padding: 18px 22px;
   margin-bottom: 18px;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.25);
+  border: 1px solid #e5e7eb;
+  box-shadow:
+    0 18px 40px rgba(15, 23, 42, 0.05),
+    0 0 0 1px rgba(148, 163, 184, 0.12);
 }
 
-/* Text inputs */
-input[type="file"] {
-  color: #e5e7eb;
-  background-color: #2b2d31;
-  padding: 6px 4px;
-  border-radius: 6px;
-  border: 1px solid #3a3d41;
+.card-helper {
+  margin-top: 0;
+  margin-bottom: 14px;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* Upload row */
+.upload-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Labels */
+.label {
+  font-weight: 600;
+  color: #1d4ed8;
+  margin-right: 8px;
 }
 
 /* -----------------------------------------------------------
-   Table Styles (we will refine later)
+   Typography
 ----------------------------------------------------------- */
 
+h2 {
+  color: #111827;
+  margin-top: 0;
+  margin-bottom: 8px;
+  font-weight: 600;
+  text-align: left;
+  font-size: 1.1rem;
+}
+
+/* -----------------------------------------------------------
+   Inputs
+----------------------------------------------------------- */
+
+input[type="file"] {
+  color: #111827;
+  background-color: #f9fafb;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+}
+
+/* -----------------------------------------------------------
+   Buttons (primary action)
+----------------------------------------------------------- */
+
+button {
+  padding: 8px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1px solid #2563eb;
+  background: linear-gradient(135deg, #2563eb, #22c55e);
+  color: #f9fafb;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+  box-shadow: none;
+}
+
+/* Hint text */
+.hint {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* -----------------------------------------------------------
+   Table Styles
+----------------------------------------------------------- */
+
+.table-scroll {
+  max-height: 480px;
+  overflow: auto;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+/* Global table styles */
 table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 10px;
-}
-
-th, td {
-  border: 1px solid #3a3d41;
-  padding: 8px 10px;
   font-size: 0.9rem;
 }
 
+th,
+td {
+  border: 1px solid #e5e7eb;
+  padding: 6px 8px;
+  font-size: 0.85rem;
+}
+
 th {
-  background-color: #2a2c2f;
-  color: #ffffff;
+  background: #eff6ff;
+  color: #111827;
   font-weight: 600;
 }
 
 /* Zebra rows */
 tr:nth-child(even) td {
-  background-color: #1f2023;
+  background-color: #f9fafb;
 }
-/* -----------------------------------------------------------
-   Headers (H2 for Summary + Recreated Timecard)
------------------------------------------------------------ */
-
-h2 {
-  color: #569cd6;   /* VSCode tag blue */
-  margin-top: 0;
-  margin-bottom: 12px;
-  font-weight: 600;
-  text-align: center;
+tr:nth-child(odd) td {
+  background-color: #ffffff;
 }
 
-/* -----------------------------------------------------------
-   Buttons (VSCode Blue + VSCode Comment Green Text)
------------------------------------------------------------ */
-
-button {
-
-  padding: 8px 16px;
-  border: 2px solid white;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  margin-right: 8px;
-  background-color: #008cff; /* VSCode blue */
-  color: #ffffff;            /* VSCode comment green */
-  transition: 0.2s ease;
-}
-
-button:hover:not(:disabled) {
-  background-color: #4a8abc; /* slightly darker/dimmer blue */
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-
+/* Weekly summary table (screen) */
 .weekly-summary-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 0.5rem;
   margin-bottom: 1rem;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .weekly-summary-table th,
 .weekly-summary-table td {
-  border: 1px solid #ccc;
+  border: 1px solid #e5e7eb;
   padding: 4px 8px;
   text-align: center;
 }
 
 .weekly-summary-table th {
-  background-color: #1a1717;
+  background-color: #dbeafe;
 }
 
-/* Hide print area normally */
+/* -----------------------------------------------------------
+   Print area (hidden on screen)
+----------------------------------------------------------- */
+
 #printArea {
   display: none;
 }
 
-/* Print layout */
+/* -----------------------------------------------------------
+   Print layout (clean PDF: white, black text, blue headers)
+----------------------------------------------------------- */
 @media print {
+  /* Ensure colors & text render as specified */
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 
-  /* Hide interactive UI */
+  /* Hide the entire app by default */
   body * {
     visibility: hidden !important;
   }
 
-  /* Show ONLY printArea */
-  #printArea, #printArea * {
+  /* Show ONLY the print area and its children */
+  #printArea,
+  #printArea * {
     visibility: visible !important;
   }
 
   #printArea {
     display: block;
     position: absolute;
-    top: 0;
-    left: 0;
-    padding: 20px;
+    inset: 0;
+    padding: 24px;
+    width: 100%;
+    background: #ffffff;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 10pt;
+    color: #000000;
+  }
+
+  /* Headings in print */
+  #printArea h2 {
+    margin: 0 0 8px 0;
+    font-size: 18pt;
+    font-weight: 600;
+    color: #000000;
+  }
+
+  #printArea h3 {
+    margin: 12px 0 6px 0;
     font-size: 12pt;
-    width: 100%;
+    font-weight: 600;
+    color: #000000;
   }
 
+  #printArea p {
+    margin: 4px 0;
+    color: #000000;
+  }
+
+  /* Tables: clean, readable */
   #printArea table {
-    border-collapse: collapse;
     width: 100%;
+    border-collapse: collapse;
+    margin-top: 6px;
+    margin-bottom: 10px;
+    font-size: 9pt;
   }
 
-  #printArea th, #printArea td {
-    border: 1px solid #000;
+  #printArea th,
+  #printArea td {
+    border: 1px solid #000000;
     padding: 4px 6px;
     text-align: center;
+    background: #ffffff;
+    color: #000000;
   }
 
-  #printArea h2, #printArea h3 {
-    margin-top: 20px;
+  /* BLUE header row for all tables in print area */
+  #printArea th {
+    background: #1f4e79;
+    color: #ffffff;
+    font-weight: 600;
+  }
+
+  /* Remove screen zebra striping for print */
+  #printArea tr:nth-child(even) td,
+  #printArea tr:nth-child(odd) td {
+    background: #ffffff;
+  }
+
+  /* Spacing between sections inside print area */
+  #pOriginalTable,
+  #pReportSummary,
+  #pReportTable {
+    margin-bottom: 12px;
   }
 }

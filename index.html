@@ -6,6 +6,103 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="app-title-block">
+        <h1>HR Timecard Checker</h1>
+        <p class="subtitle">
+          Upload an employee timecard CSV, run automated checks,<br />
+          and export a clean, printable validation report for HR.
+        </p>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <div class="container">
+        <!-- File upload -->
+        <div class="card">
+          <h2>Upload Timecard</h2>
+          <p class="card-helper">
+            1) Download the employee timecard as CSV from Google Sheets<br />
+            2) Upload it here<br />
+            3) Click <strong>Run Check</strong> to see the validation
+          </p>
+          <div class="upload-row">
+            <label for="fileInput" class="label">CSV File</label>
+            <input type="file" id="fileInput" accept=".csv" />
+            <button id="runCheckBtn" disabled>Run Check</button>
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="card" id="summaryCard" hidden>
+          <h2>Summary</h2>
+          <div id="summaryContent"></div>
+        </div>
+      </div>
+
+      <div class="recreatedTimeCardContainer">
+        <!-- Timecard table -->
+        <div class="card" id="tableCard" hidden>
+          <h2>Recreated Timecard &amp; Validation</h2>
+          <p class="card-helper">
+            This view shows the original timecard data, our computed hours, and any rule errors.
+          </p>
+          <div id="tableContainer" class="table-scroll"></div>
+        </div>
+      </div>
+
+      <!-- Downloads -->
+      <div class="container">
+        <div class="card" id="downloadCard" hidden>
+          <h2>Export</h2>
+          <p class="card-helper">
+            All checks are clear. Generate a one-page PDF report for records or payroll.
+          </p>
+          <button id="downloadPdfBtn" disabled>Download Timecard PDF</button>
+          <p class="hint">
+            Your browser's print dialog will open. Choose <strong>Save as PDF</strong>.
+          </p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- PRINT AREA (hidden on screen, used only for PDF/print) -->
+  <div id="printArea">
+    <h2>Timecard Validation Report</h2>
+    <p>
+      <strong>Employee:</strong> <span id="pEmployee"></span><br />
+      <strong>Pay Period:</strong>
+      <span id="pBegin"></span> — <span id="pEnd"></span><br />
+      <strong>Pay Date:</strong> <span id="pPayDate"></span>
+    </p>
+
+    <!-- Original-style timecard -->
+    <h3>Original Timecard</h3>
+    <div id="pOriginalTable"></div>
+
+    <!-- Our report below -->
+    <h3>Weekly Summary</h3>
+    <div id="pReportSummary"></div>
+
+    <h3>Validation Details</h3>
+    <div id="pReportTable"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+
+<!-- ++++++++++++++++OLD code below (for reference) ++++++++++++++++ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>HR Timecard Checker</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
   <div class="container">
     <h1>HR Timecard Checker</h1>
     <p class="subtitle">
@@ -14,14 +111,14 @@
       3) Click <strong>Run Check</strong> to see the report
     </p>
 
-    <!-- File upload -->
+
     <div class="card">
       <label for="fileInput" class="label">Upload CSV file</label>
       <input type="file" id="fileInput" accept=".csv" />
       <button id="runCheckBtn" disabled>Run Check</button>
     </div>
 
-    <!-- Summary -->
+
     <div class="card" id="summaryCard" hidden>
       <h2>Summary</h2>
       <div id="summaryContent"></div>
@@ -31,7 +128,7 @@
    
   </div>
   <div class="recreatedTimeCardContainer">
-  <!-- Timecard table -->
+
     <div class="card" id="tableCard" hidden>
       <h2>Recreated Timecard</h2>
       <div id="tableContainer"></div>
@@ -46,18 +143,18 @@
     <strong>Pay Date:</strong> <span id="pPayDate"></span>
   </p>
 
-  <!-- Original-style timecard -->
+
   <h3>Original Timecard</h3>
   <div id="pOriginalTable"></div>
 
-  <!-- Our report below -->
+
   <h3>Validation Summary</h3>
   <div id="pReportSummary"></div>
 
   <h3>Validation Details</h3>
   <div id="pReportTable"></div>
 </div>
-<!-- Downloads -->
+
  <div class="card" id="downloadCard" hidden>
       <h2>Export</h2>
       <button id="downloadCsvBtn" disabled>Download Clean CSV</button>
@@ -70,3 +167,4 @@
   <script src="app.js"></script>
 </body>
 </html>
+-->
