@@ -285,7 +285,7 @@ tr:nth-child(odd) td {
 
   /* Tables: clean, readable */
   #printArea table {
-    width: 100%;
+    width: 96%;
     border-collapse: collapse;
     margin-top: 6px;
     margin-bottom: 10px;
@@ -295,7 +295,7 @@ tr:nth-child(odd) td {
   #printArea th,
   #printArea td {
     border: 1px solid #000000;
-    padding: 4px 6px;
+    padding: 4px;
     text-align: center;
     background: #ffffff;
     color: #000000;
